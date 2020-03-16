@@ -21,6 +21,7 @@ Tries to be feature-complete with the Nextcloud Webdav's capabilities.
  - [x] reset config files
  - [x] multiple users
  - [x] multi-language support
- - [x] froce language from param
+ - [x] auto-detect / auto-load system language
+ - [x] force language from param
  - [ ] load specific config files from params
 
