@@ -1,0 +1,4 @@
+# Edit the shell variables below
+CLOUDSERVERDOMAIN='cloud.domain.tld'
+CLOUDSERVERPROTOCOL='https://'
+CLOUDSERVERPORT=443
