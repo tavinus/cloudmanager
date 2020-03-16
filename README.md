@@ -25,6 +25,7 @@ will use source file name when target ends with  /
  - [x] multi-language support
  - [x] auto-detect / auto-load system language
  - [x] force language from param
+ - [x] run from symlinks (find config files)
  - [ ] load specific config files from params
 ## Configuration
 There are two configuration files that need to be edited
