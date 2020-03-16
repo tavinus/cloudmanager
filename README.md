@@ -1,4 +1,4 @@
-# cloudmanager
+# Tavinus Cloud Manager
 Nextcloud / Owncloud CLI Webdav Client  
   
 Uses `curl` to access the Nextcloud webdav service.  
