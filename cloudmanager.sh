@@ -368,6 +368,8 @@ CLOUDSERVERPORT=443
 # Creates the file cloudmanager.accounts with the default options
 resetAccountsConfig() {
         echo -ne "---- Add accounts one per line, as in USERNAME:PASSWORD
+---- You can use an \"App Password\" to access your account (instead of your regular password)
+---- Settings > Personal > Security > Enter App Name > Create new app password
 ---- Lines starting with four dashes will be ignored
 myUsername:myPassword
 " > "$C_ACCOUNTS_FILE"
