@@ -1,3 +1,7 @@
+# CloudManager Config Files
+cloudmanager.accounts
+cloudmanager.server
+
 # Compiled source #
 ###################
 *.com
