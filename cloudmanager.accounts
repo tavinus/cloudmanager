@@ -1,5 +1,6 @@
 ---- Add accounts one per line, as in USERNAME:PASSWORD
 ---- You can use an "App Password" to access your account (instead of your regular password)
 ---- Settings > Personal > Security > Enter App Name > Create new app password
+---- The first user is the default user, the rest can be used with -u <usernamme>
 ---- Lines starting with four dashes will be ignored
 myUsername:myPassword
