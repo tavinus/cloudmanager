@@ -22,5 +22,5 @@ Tries to be feature-complete with the Nextcloud Webdav's capabilities.
  - [x] multiple users
  - [x] multi-language support
  - [x] froce language from param
- - [] load specific config files from params
+ - [ ] load specific config files from params
 
