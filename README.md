@@ -17,7 +17,8 @@ Tries to be feature-complete with the Nextcloud Webdav's capabilities.
  - [x] list shares
  - [x] list links
 ### Internal App Goals
- - [x] target folder detection redirection (ends with /)
+ - [x] target folder detection redirection
+will use source file name when target ends with  /
  - [x] external config files
  - [x] reset config files
  - [x] multiple users
