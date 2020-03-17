@@ -12,12 +12,12 @@
 # Gustavo Arnosti Neves
 #
 # Created..: 12 / 06 / 2018
-# Modified.: 16 / 03 / 2020
+# Modified.: 17 / 03 / 2020
 #
 ##############################################################################
 
 
-C_VERSION='0.1.5'
+C_VERSION='0.1.6'
 
                                     # working languages should be added here
 C_SUPPORTED_LANGUAGES=(en_US pt_BR)
@@ -101,6 +101,10 @@ OPTIONS
                            Languages currently supported:
                            ${C_SUPPORTED_LANGUAGES[@]}
 
+NOTES
+ - Target locations endish with a forward dash will be treated as folders and will
+   have the source name file appended to it as a target location.
+
 COMMANDS
 
 > ls,list [target]
@@ -111,7 +115,7 @@ COMMANDS
     Creates a folder at the cloud
     Ex: $C_SNAME mkdir MyTestFolder
 
-> send,upload <localfolder/localfile> <cloudfolder/cloudfile>
+> send,upload <localfolder/localfile> [cloudfolder/cloudfile]
     Sends a local file to the cloud instance
     Ex: $C_SNAME send '/home/user/MyFile.xml' 'CloudFolder/MyFile.xml'
 
@@ -127,12 +131,12 @@ COMMANDS
     Erases a folder or file inside the cloud instance (may move to Trashbin)
     Ex: $C_SNAME del 'MyFolder/MyFile.txt'
 
-> get,download <source> <target>
+> get,download <source> [target]
     Downloads a file from the cloud to a local folder 
     Target defaults to current folder with remote name if blank
     Ex: $C_SNAME get 'RemoteFolder/RemoteFile.txt' '/home/user/MyFile.txt'
 
-> shares,listShares
+> shares,listShares [folder]
     Prints table with shares (183 cols)
     Specify a folder or leave blank to list all
     Ex: $C_SNAME shares
@@ -208,9 +212,13 @@ OPCOES
                            Idiomas aceitos nesta versao:
                            ${C_SUPPORTED_LANGUAGES[@]}
 
+NOTAS
+ - Destinos que terminarem com uma barra para frente "/" serao tratados como uma
+   pasta e terao o nome do arquivo de origem adicionados ao caminho como destino.
+
 COMANDOS
 
-> ls,list <destino>
+> ls,list [destino]
     Lista uma pasta ou arquivo
     Ex: $C_SNAME list 
 
@@ -218,7 +226,7 @@ COMANDOS
     Cria uma pasta no cloud
     Ex: $C_SNAME mkdir PastaTeste
 
-> send,upload <pasta/arquivo.local> <pasta/arquivo.cloud>
+> send,upload <pasta/arquivo.local> [pasta/arquivo.cloud]
     Envia um arquivo local para o cloud
     Ex: $C_SNAME send '/user/nfe/meuarquivo.xml' 'ARCO/nfe/meuarquivo.xml'
 
@@ -234,11 +242,11 @@ COMANDOS
     Apaga um arquivo ou pasta dentro do cloud (move para a lixeira)
     Ex: $C_SNAME del 'ARCO/meuarquivo.txt'
 
-> get,download <origem> <destino>
+> get,download <origem> [destino]
     Faz download de um arquivo do cloud para um disco local
     Ex: $C_SNAME get 'ARCO/meuarquivo.txt' '/user/nfe/meuarquivo.txt'
 
-> shares,listShares
+> shares,listShares [pasta]
     Imprime tabela com compartilhamentos (183 cols)
     Especifique uma pasta ou deixe em branco para listar tudo.
     Ex: $C_SNAME shares
@@ -688,7 +696,7 @@ sendFile() {
                 return $FALSE
         fi
         if isEmpty "$2"; then        # Send to root with source name
-                __target="$2$1"
+                __target="$(basename "$1")"
         elif endsWithDash "$2"; then # Appends source name to target folder
                 __target="$2$(basename "$1")"
         fi
