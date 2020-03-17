@@ -83,8 +83,8 @@ OPTIONS
                            en_US pt_BR
 
 NOTES
- - Target locations endish with a forward dash will be treated as folders and will
-   have the source name file appended to it as a target location.
+ - Target locations ending with a forward dash / will be treated as folders and
+   will have the source name file appended to it as a target location.
 
 COMMANDS
 
