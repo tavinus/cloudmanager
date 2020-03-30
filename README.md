@@ -38,7 +38,7 @@ CLOUDSERVERPROTOCOL='https://'
 CLOUDSERVERPORT=443
 ```
 #### `cloudmanager.accounts`
-Defines the usernames/password to be used  
+Defines the usernames/passwords to be used  
 *The first user is used as default*
 ```
 ---- Add accounts one per line, as in USERNAME:PASSWORD
