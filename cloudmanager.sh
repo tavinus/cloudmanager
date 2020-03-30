@@ -17,7 +17,7 @@
 ##############################################################################
 
 
-C_VERSION='0.1.6'
+C_VERSION='0.1.7'
 
                                     # working languages should be added here
 C_SUPPORTED_LANGUAGES=(en_US pt_BR)
@@ -677,7 +677,7 @@ listCloud() {
         if ! isEmpty "$1"; then
                 tgt="$1"
         fi
-        local xml="$("$CURLBIN" -s -u $C_USERNAME:$C_PASS -X PROPFIND "$C_FDAV_URL/$C_USERNAME/$tgt")"
+        local xml="$("$CURLBIN" -s -u $C_USERNAME:$C_PASS -X PROPFIND \"$C_FDAV_URL/$C_USERNAME/$tgt\")"
         #"$CURLBIN" -s -u $C_USERNAME:$C_PASS -X PROPFIND "$C_FDAV_URL/$C_USERNAME/$tgt"
         #printf "%s\n" "$xml"
         listFromXml "$xml"
@@ -701,7 +701,7 @@ sendFile() {
                 __target="$2$(basename "$1")"
         fi
         echo "source: $1"$'\n'"target: $__target"
-        "$CURLBIN" -s -u $C_USERNAME:$C_PASS -T "$1" "$C_FDAV_URL/$C_USERNAME/$__target"
+        "$CURLBIN" -s -u $C_USERNAME:$C_PASS -T \"$1\" \"$C_FDAV_URL/$C_USERNAME/$__target\"
 }
 
 
@@ -713,7 +713,7 @@ createFolder() {
                 logErr "$M_TRYHELP"
                 return $FALSE
         fi
-        "$CURLBIN" -s -u $C_USERNAME:$C_PASS -X MKCOL "$C_FDAV_URL/$C_USERNAME/$1"
+        "$CURLBIN" -s -u $C_USERNAME:$C_PASS -X MKCOL \"$C_FDAV_URL/$C_USERNAME/$1\"
         return $?
 }
 
@@ -726,7 +726,7 @@ deleteFileFolder() {
                 logErr "$M_TRYHELP"
                 return $FALSE
         fi
-        "$CURLBIN" -s -u $C_USERNAME:$C_PASS -X DELETE "$C_FDAV_URL/$C_USERNAME/$1"
+        "$CURLBIN" -s -u $C_USERNAME:$C_PASS -X DELETE \"$C_FDAV_URL/$C_USERNAME/$1\"
         return $?
 }
 
@@ -748,7 +748,7 @@ moveFileFolder() {
                 __target="$2$(basename "$1")"
         fi
         #echo "source: $1"$'\n'"target: $__target"
-        "$CURLBIN" -s -u $C_USERNAME:$C_PASS -X MOVE --header "Destination: $C_FDAV_URL/$C_USERNAME/$__target" "$C_FDAV_URL/$C_USERNAME/$1"
+        "$CURLBIN" -s -u $C_USERNAME:$C_PASS -X MOVE --header \"Destination: $C_FDAV_URL/$C_USERNAME/$__target\" \"$C_FDAV_URL/$C_USERNAME/$1\"
         return $?
 }
 
@@ -769,7 +769,7 @@ copyFileFolder() {
                 __target="$2$(basename "$1")"
         fi
         #echo "source: $1"$'\n'"target: $__target"
-        "$CURLBIN" -s -u $C_USERNAME:$C_PASS -X COPY --header "Destination: $C_FDAV_URL/$C_USERNAME/$__target" "$C_FDAV_URL/$C_USERNAME/$1"
+        "$CURLBIN" -s -u $C_USERNAME:$C_PASS -X COPY --header \"Destination: $C_FDAV_URL/$C_USERNAME/$__target\" \"$C_FDAV_URL/$C_USERNAME/$1\"
         return $?
 }
 
@@ -805,7 +805,7 @@ getFile() {
         fi
         #log "$M_CLOUDFILE: $1"$'\n'"$M_LOCALFILE: $__target"
         #"$CURLBIN" --silent -u $C_USERNAME:$C_PASS -X GET "$C_FDAV_URL/$C_USERNAME/$1" --output "$__target" 2>>log.txt
-        "$CURLBIN" --silent -u $C_USERNAME:$C_PASS "$C_FDAV_URL/$C_USERNAME/$1" --output "$__target"
+        "$CURLBIN" --silent -u $C_USERNAME:$C_PASS \"$C_FDAV_URL/$C_USERNAME/$1\" --output \"$__target\"
         local ret=$?
         #echo "ret: $ret"
         if [[ $ret -ne 0 ]]; then
