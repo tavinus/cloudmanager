@@ -60,7 +60,7 @@ You can use the parameters `-h` or `--help` to get the help information.
 ```
 $ ./cloudmanager -l en --help
 
-Tavinus Cloud Manager v0.1.6
+Tavinus Cloud Manager v0.1.9
 
 CONFIG
  - cloudmanager.server    Edit this file to configure host domain, protocol and port
@@ -73,6 +73,7 @@ CONFIG
 OPTIONS
 
  -V, --version             Prints version to screen and finishes execution
+ -v, --verbose             Prints execution information to screen
  -h, --help                Prints this help to screen and finishes execution
      --resetServerConfig   Resets server config file to default
      --resetAccountsConfig Resets accounts config file to default
