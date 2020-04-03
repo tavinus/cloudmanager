@@ -12,12 +12,12 @@
 # Gustavo Arnosti Neves
 #
 # Created..: 12 / 06 / 2018
-# Modified.: 31 / 03 / 2020
+# Modified.: 03 / 04 / 2020
 #
 ##############################################################################
 
 
-C_VERSION='0.1.8'
+C_VERSION='0.1.9'
 
                                     # working languages should be added here
 C_SUPPORTED_LANGUAGES=(en_US pt_BR)
@@ -77,6 +77,8 @@ setMessagesEnUs() {
         M_ACCOUNTSCONFIGRESETERROR=$'Error when trying to reset the accounts config file.\n'"$M_MAYNEEDPERMISSIONS"
         M_RESETSERVERCONFIG='You can create a new/empty server config file template with'
         M_RESETACCOUNTSCONFIG='You can create a new/empty accounts config file template with'
+        M_REMOVING='Removing'
+        M_CREATINGFOLDER='Creating Folder'
 
 
         ### HELP
@@ -92,6 +94,7 @@ CONFIG
 OPTIONS
 
  -V, --version             Prints version to screen and finishes execution
+ -v, --verbose             Prints execution information to screen
  -h, --help                Prints this help to screen and finishes execution
      --resetServerConfig   Resets server config file to default
      --resetAccountsConfig Resets accounts config file to default
@@ -188,6 +191,8 @@ setMessagesPtBr() {
         M_ACCOUNTSCONFIGRESETERROR=$'Erro ao tentar recriar o arquivo de configuracao das contas.\n'"$M_MAYNEEDPERMISSIONS"
         M_RESETSERVERCONFIG='Voce pode criar um novo arquivo de config do servidor usando'
         M_RESETACCOUNTSCONFIG='Voce pode criar um novo arquivo de config das contas usando'
+        M_REMOVING='Removendo'
+        M_CREATINGFOLDER='Criando Pasta'
 
 
         ### HELP
@@ -203,6 +208,7 @@ ARQUIVOS DE CONFIG
 OPCOES
 
  -V, --version             Imprime versao na tela e termina execucao
+ -v, --verbose             Imprime informacoes de execucao na tela
  -h, --help                Imprime esta ajuda e termina execucao
  -r, --resetServerConfig   Reseta / recria o arquivo de configuracoes de servidor
  -r, --resetAccountsConfig Reseta / recria o arquivo de configuracoes de contas
@@ -355,6 +361,7 @@ initVars() {
 
         TRUE=0
         FALSE=1
+        VERBOSE=$FALSE
 }
 
 
@@ -603,7 +610,7 @@ listFromXml() {
 
 
 # encode URL escaping
-rawurlencode() {
+rawUrlEncode() {
         local string="${1}"
         local strlen=${#string}
         local encoded=""
@@ -620,6 +627,31 @@ rawurlencode() {
         echo "${encoded}"    # You can either set a return variable (FASTER) 
         REPLY="${encoded}"   #+or echo the result (EASIER)... or both... :p
 }
+
+
+escapeWhitespaces() {
+        local string="${1}"
+        local strlen=${#string}
+        local encoded=""
+        local pos c o
+
+        for (( pos=0 ; pos<strlen ; pos++ )); do
+                c=${string:$pos:1}
+                case "$c" in
+                        " " ) o='%20' ;;
+                        * ) o="${c}" ;;
+                esac
+                encoded+="${o}"
+        done
+        echo "${encoded}"    # You can either set a return variable (FASTER) 
+        REPLY="${encoded}"   #+or echo the result (EASIER)... or both... :p
+
+}
+
+
+#testVar='https://cloud.arnosti.net.br/dav/test/what ever you want'
+#echo "$(rawUrlEncode "$testVar")"
+#echo "$(escapeWhitespaces "$testVar")"
 
 
 # Returns the lowercase version of $@
@@ -675,7 +707,8 @@ uppercase() {
 listCloud() {
         local tgt=""
         if ! isEmpty "$1"; then
-                tgt="$1"
+                #tgt="$1"
+                tgt="$(escapeWhitespaces "$1")"
         fi
         local xml="$("$CURLBIN" -s -u $C_USERNAME:$C_PASS -X PROPFIND "$C_FDAV_URL/$C_USERNAME/$tgt")"
         #"$CURLBIN" -s -u $C_USERNAME:$C_PASS -X PROPFIND "$C_FDAV_URL/$C_USERNAME/$tgt"
@@ -700,8 +733,9 @@ sendFile() {
         elif endsWithDash "$2"; then # Appends source name to target folder
                 __target="$2$(basename "$1")"
         fi
-        echo "source: $1"$'\n'"target: $__target"
-        "$CURLBIN" -s -u $C_USERNAME:$C_PASS -T "$1" "$C_FDAV_URL/$C_USERNAME/$__target"
+        #echo "source: $1"$'\n'"target: $__target"
+        log "$M_SOURCE: $1"$'\n'"$M_DESTINATION: $__target"
+        "$CURLBIN" -s -u $C_USERNAME:$C_PASS -T "$1" "$C_FDAV_URL/$C_USERNAME/$(escapeWhitespaces "$__target")"
 }
 
 
@@ -713,7 +747,9 @@ createFolder() {
                 logErr "$M_TRYHELP"
                 return $FALSE
         fi
-        "$CURLBIN" -s -u $C_USERNAME:$C_PASS -X MKCOL "$C_FDAV_URL/$C_USERNAME/$1"
+        #echo "$CURLBIN" -s -u $C_USERNAME:$C_PASS -X MKCOL "$C_FDAV_URL/$C_USERNAME/$1"
+        log "$M_CREATINGFOLDER: $1"
+        "$CURLBIN" -s -u $C_USERNAME:$C_PASS -X MKCOL "$C_FDAV_URL/$C_USERNAME/$(escapeWhitespaces "$1")"
         return $?
 }
 
@@ -726,7 +762,8 @@ deleteFileFolder() {
                 logErr "$M_TRYHELP"
                 return $FALSE
         fi
-        "$CURLBIN" -s -u $C_USERNAME:$C_PASS -X DELETE "$C_FDAV_URL/$C_USERNAME/$1"
+        log "$M_REMOVING: $1"
+        "$CURLBIN" -s -u $C_USERNAME:$C_PASS -X DELETE "$C_FDAV_URL/$C_USERNAME/$(escapeWhitespaces "$1")"
         return $?
 }
 
@@ -748,7 +785,8 @@ moveFileFolder() {
                 __target="$2$(basename "$1")"
         fi
         #echo "source: $1"$'\n'"target: $__target"
-        "$CURLBIN" -s -u $C_USERNAME:$C_PASS -X MOVE --header "Destination: $C_FDAV_URL/$C_USERNAME/$__target" "$C_FDAV_URL/$C_USERNAME/$1"
+        log "$M_SOURCE: $1"$'\n'"$M_DESTINATION: $__target"
+        "$CURLBIN" -s -u $C_USERNAME:$C_PASS -X MOVE --header "Destination: $C_FDAV_URL/$C_USERNAME/$(escapeWhitespaces "$__target")" "$C_FDAV_URL/$C_USERNAME/$(escapeWhitespaces "$1")"
         return $?
 }
 
@@ -769,7 +807,8 @@ copyFileFolder() {
                 __target="$2$(basename "$1")"
         fi
         #echo "source: $1"$'\n'"target: $__target"
-        "$CURLBIN" -s -u $C_USERNAME:$C_PASS -X COPY --header "Destination: $C_FDAV_URL/$C_USERNAME/$__target" "$C_FDAV_URL/$C_USERNAME/$1"
+        log "$M_SOURCE: $1"$'\n'"$M_DESTINATION: $__target"
+        "$CURLBIN" -s -u $C_USERNAME:$C_PASS -X COPY --header "Destination: $C_FDAV_URL/$C_USERNAME/$(escapeWhitespaces "$__target")" "$C_FDAV_URL/$C_USERNAME/$(escapeWhitespaces "$1")"
         return $?
 }
 
@@ -803,9 +842,9 @@ getFile() {
                 logErr "$M_ERRORGETFILE!"$'\n'"$M_ITEMEMPTY"$'\n'"$M_CLOUDFILE: $1"$'\n'"$M_LOCALFILE: $__target"
                 return $FALSE
         fi
-        #log "$M_CLOUDFILE: $1"$'\n'"$M_LOCALFILE: $__target"
+        log "$M_CLOUDFILE: $1"$'\n'"$M_LOCALFILE: $__target"
         #"$CURLBIN" --silent -u $C_USERNAME:$C_PASS -X GET "$C_FDAV_URL/$C_USERNAME/$1" --output "$__target" 2>>log.txt
-        "$CURLBIN" --silent -u $C_USERNAME:$C_PASS "$C_FDAV_URL/$C_USERNAME/$1" --output "$__target"
+        "$CURLBIN" --silent -u $C_USERNAME:$C_PASS "$C_FDAV_URL/$C_USERNAME/$(escapeWhitespaces "$1")" --output "$__target"
         local ret=$?
         #echo "ret: $ret"
         if [[ $ret -ne 0 ]]; then
@@ -842,7 +881,7 @@ getFile() {
 listShares() {
         local tgt=""
         if ! isEmpty "$1"; then
-                tgt="$(rawurlencode "$1")"
+                tgt="$(rawUrlEncode "$1")"
                 #tgt='?path='"$tgt"'&reshares=true&shared_with_me=1'
                 tgt='?path='"$tgt"'&reshares=true'
         fi
@@ -963,9 +1002,16 @@ printLinks() {
 #### PRINTING TO SCREEN
 
 
+isVerbose() {
+        return $VERBOSE
+}
+
+
 # Prints message to stdout
 log() {
-        printf "%s\n" "$@"
+        if isVerbose; then
+                printf "%s\n" "$@"
+        fi
 }
 
 
@@ -1052,6 +1098,8 @@ runCloudManager() {
                 case "$1" in
                         -V|--version|--Version)
                                 printBanner 'nopadding' ; exit 0 ;;
+                        -v|--verbose)
+                                VERBOSE=$TRUE ; shift ;;
                         -h|--help|--Help)
                                 printHelp ; exit 0 ;;
                         -u|--user)
