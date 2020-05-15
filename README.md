@@ -2,6 +2,14 @@
 Nextcloud / Owncloud CLI Webdav Client  
   
 Uses `curl` to access the Nextcloud webdav service.  
+
+---
+
+**If you want to send files to publicly shared Nextcloud/Owncloud folders,  
+check out my [Cloud Sender 2 App](https://github.com/tavinus/cloudsend.sh).**  
+
+---
+
 ## Features  
 Tries to be feature-complete with the Nextcloud Webdav's capabilities.  
 ### Webservice Tasks
